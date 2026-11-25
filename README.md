@@ -68,3 +68,61 @@ $ newman -v
 | T13 | Хязгаар: буруу JSON | — | — | — | — | `{"studentID": "B23` | **400** | `ERROR_BAD_JSON` |
 
 Ангиллаар: happy path 1 (T01), алдааны анги бүрд (NO_STUDENT, INACTIVE, NO_COURSE, PREREQUISITES) 1+ (T02–T06), давхар алдаа 3 (T07–T09), хязгаар 4 (T10–T13).
+
+### Алхам 5 — Бодит тест кейс
+
+Спецификаци бүрийг `lab05-collection.json`-д бие даасан folder болгосон (дараагийн хэсгийг үз).
+
+## Даалгавар 3: Collection
+
+- **`lab05-collection.json`** — Postman Collection v2.1, 13 folder (T01–T13), нийт 31 хүсэлт. Folder бүр: setup `PUT /students/:id`, `PUT /courses/:id` → `POST /registrations` → oracle-ууд.
+- **Бие даасан байдал:** тест бүр өөрийн ID-тай оюутан/хичээлийг (жишээ нь `B23T05`, `CS313T05`) өөрөө үүсгэдэг тул тестийн дараалал солигдсон ч, нэгийг нь тусад нь ажиллуулсан ч үр дүн өөрчлөгдөхгүй. "Байхгүй" оюутан/хичээлд хэзээ ч PUT хийгддэггүй ID ашигласан (`B23NOSTUDENT02`, `CS999T04`).
+- **Oracle-ууд:** POST бүрт статус код ба `result` утга (2 `pm.test`); PREREQUISITES-т нэмж `missing` массив; амжилттай бүртгэлд `registrationID` нь **эерэг бүхэл тоо** эсэхийг шалгана — яг утгыг (`== 1`) шалгаагүй, учир нь сервер in-memory тул ID хуримтлагддаг. T01 нэмэлтээр `GET /registrations`-д шинэ бүртгэл орсныг шалгана. Setup PUT бүр мөн `200` ба `result:"OK"` эсэхээр шалгагдана.
+- **Тестийн нэр:** жишээ нь `"Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT: result = ERROR_INACTIVE_STUDENT"`.
+- Collection-ыг Postman аппад гараар биш, `tools/specs.js` (спецификацийн жагсаалт) ба `tools/build-collection.js` (v2.1 JSON үүсгэгч)-оор үүсгэсэн — README-ийн хүснэгт, collection хоёрыг нэг эх сурвалжаас гаргаснаар зөрөх эрсдэлгүй. Postman → Import-оор нээж болно.
+
+**Assertion-ы тоо (48):** setup PUT 17 + POST-ын oracle 30 (13 × статус + 13 × result + 2 × missing + 2 × registrationID) + `GET /registrations` 1 = **48**. Хүсэлт: 17 PUT + 13 POST + 1 GET = **31**.
+
+## Даалгавар 4: Newman
+
+```bash
+node server.js &          # тус бүрийн өмнө сервер шинээр асаасан
+newman run lab05-collection.json 2>&1 | tee results/newman-pass.txt;      echo "exit=${PIPESTATUS[0]}"
+newman run lab05-collection-fail.json 2>&1 | tee results/newman-fail.txt; echo "exit=${PIPESTATUS[0]}"
+kill %1                   # сервер унтраах
+newman run lab05-collection.json 2>&1 | tee results/newman-down.txt;      echo "exit=${PIPESTATUS[0]}"
+```
+
+Exit code-уудыг `${PIPESTATUS[0]}`-оор авч `results/newman-*-exit.txt`-д хадгалсан.
+
+| Ажиллуулалт | Файл | requests (executed / failed) | assertions (executed / failed) | Exit code |
+|---|---|---|---|---|
+| **PASS** | `results/newman-pass.txt` | 31 / 0 | **48 / 0** | **0** |
+| **FAIL** | `results/newman-fail.txt` | 31 / 0 | **48 / 1** | **1** |
+| **DOWN** | `results/newman-down.txt` | 31 / 31 | **48 / 48** | **1** |
+
+- **FAIL:** `lab05-collection-fail.json` нь үндсэн collection-той ижил, зөвхөн T01-ийн статус oracle-ыг зориуд `201`-ийн оронд `200` хүлээдэг болгосон. Newman: `AssertionError … 201 OK: статус 200 — expected response to have status code 200 but got 201`, exit **1**. CI quality gate нь яг энэ 0 биш exit code-оор pipeline-ийг зогсооно. Үндсэн `lab05-collection.json` зөв хэвээр.
+- **DOWN:** сервер унтарсан үед хүсэлт бүр `connect ECONNREFUSED 127.0.0.1:3000` алдаа өгч (31 хүсэлт бүгд failed), exit **1**. Энэ бол **интерфейсийн алдаа** — хариу огт ирээгүй тул систем зөв/буруу ажилласныг шүүх боломжгүй; харин **oracle-ийн алдаа** (FAIL) нь хариу ирсэн ч хүлээгдэж буйгаас өөр байсан гэсэн үг. Oracle-ууд `pm.response.json()`-ыг `pm.test` дотор дууддаг тул DOWN үед test-script өөрөө эвдрэлгүй (test-scripts failed 0), бүх 48 assertion "failed" гэж тоологдсон.
+
+## Даалгавар 5: Нийтийн API
+
+`public-api-collection.json` — `GET https://jsonplaceholder.typicode.com/users`, 3 oracle: статус 200, хоосон биш массив, эхний хэрэглэгчийн нэр `Leanne Graham`. Үр дүн `results/newman-public.txt`: requests 1 / 0, assertions **3 / 0**, exit **0**.
+
+Харьцуулалт: GET-only нийтийн API-д setup шаардлагагүй тул тест бичихэд хялбар, гэхдээ өгөгдлийг бид удирдахгүй (эхний хэрэглэгчийн нэр өөрчлөгдвөл oracle унана, сүлжээнээс хамаарна), харин өөрийн API-д PUT setup-аар төлөвийг бүрэн удирдаж, алдааны анги бүрийг зориуд үүсгэж чадсан.
+
+## Олдсон согогууд (exploratory)
+
+Спецификацийн тест бүгд PASS болсон ч, серверийн кодыг уншаад тодорхойлолтод заагаагүй оролтоор `tools/explore-defects.sh`-ээр шалгахад дараах 4 асуудал илэрсэн (`results/defects.txt`):
+
+| # | Оролт | Бодит үр дүн | Асуудал |
+|---|---|---|---|
+| D1 | Нэг оюутан нэг хичээлд 2 удаа POST | 2 удаа `201 OK` (registrationID 1, 2) | Давхар бүртгэлийг хориглодоггүй |
+| D2 | `coursesTaken: "CS2019"` (массив биш), урьдач `CS201` | `201 OK` | `String.includes`-ээр дэд мөр таарч, CS201 үзээгүй оюутан бүртгэгдсэн; setup оролтыг шалгадаггүй |
+| D3 | `status: ""` | `201 OK` | `data.status \|\| 'active'` нь хоосон мөрийг "active" болгодог |
+| D4 | `POST /registrations` бие нь `null` | Хариугүй, дараагийн хүсэлт ч холбогдохгүй | `JSON.parse("null")` → `null`-ийг задлахад TypeError гарч **сервер бүхэлдээ унадаг** (DoS) |
+
+Эдгээрийг PASS collection-д оруулаагүй: D1–D3 нь тодорхойлолтод хүлээгдэх үр дүн заагаагүй, D4 нь серверийг унагаж дараагийн тестүүдийг эвдэнэ.
+
+## Дүгнэлт
+
+Дизайны 5 алхмаас хамгийн их бодол шаардсан нь 2–3-р алхам буюу сонголтуудыг ялгаж, далд оролтыг (серверт тавьсан оюутан, хичээлийн бичлэг) параметр гэж харах байсан — POST-ын бие хоёрхон талбартай ч үр дүнг тодорхойлдог гол хүчин зүйлс нь setup-аар тавигддаг. Боломжгүй хослол олон таарсан: оюутан байхгүй үед "үзсэн хичээл", хичээл байхгүй үед "урьдач нөхцөл" сонголтууд утгагүй, 400 форматын алдаа гарвал бусад бүх сонголт хамаагүй болдог тул бүрэн үржвэрийн оронд давхар алдааны 3 сонирхолтой хослол сонгосон. Тодорхойлолтод олон алдааны эрэмбэ байхгүй байсан ч T07–T09 тестээр `NO_STUDENT → INACTIVE → NO_COURSE → PREREQUISITES` буюу оюутан хичээлээс түрүүлж шалгагддагийг тогтоолоо. Тест бүрийг өөрийн ID-тай болгож бие даасан болгосон нь in-memory сервер дээр дахин ажиллуулахад тогтвортой байлгасан, мөн registrationID-ийн яг утгыг биш төрлийг нь шалгасан. Newman-ы PASS ажиллуулалт 48 assertion-оос 0 failed, exit 0 болж, зориуд эвдсэн FAIL хувилбар 1 failed, exit 1 болсон нь CI quality gate-ийн зарчмыг харуулав. Серверийг унтраахад ECONNREFUSED гарч бүх хүсэлт унасан нь oracle-ийн алдаанаас ялгаатай интерфейсийн алдаа юм. Эхэндээ oracle-ууд `pm.test`-ээс гадна JSON parse хийдэг байсан тул DOWN үед script өөрөө эвдэрч байсныг засаж, oracle-ыг илүү тэсвэртэй болгосон. Спецификацийн тестүүд согог илрүүлээгүй ч кодыг уншиж тодорхойлолтоос гадуурх оролтоор туршихад 4 согог олдсон бөгөөд хамгийн ноцтой нь `null` бие илгээхэд сервер бүхэлдээ унадаг явдал юм. Энэ нь хар хайрцгийн спецификацид суурилсан тест зөвхөн тодорхойлолтод бичигдсэн зүйлийг л шалгадаг тул шилэн хайрцгийн судалгаа ба буруу оролтын (robustness) тестээр нөхөх шаардлагатайг харуулсан.
