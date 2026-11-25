@@ -1,0 +1,179 @@
+(node:10972) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+Lab05 — Бүртгэлийн API
+
+□ T01. Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK
+└ Setup: оюутан B231234567
+  PUT http://localhost:3000/students/B231234567 [200 OK, 178B, 25ms]
+  √  Setup: оюутан B231234567 -> 200 OK
+
+└ Setup: хичээл CS313
+  PUT http://localhost:3000/courses/CS313 [200 OK, 178B, 3ms]
+  √  Setup: хичээл CS313 -> 200 OK
+
+└ POST /registrations — Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK
+  POST http://localhost:3000/registrations [201 Created, 202B, 2ms]
+  √  Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: статус 201
+  √  Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: result = OK
+  √  Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: registrationID нь эерэг бүхэл тоо
+
+└ GET /registrations — шинэ бүртгэл жагсаалтад орсон
+  GET http://localhost:3000/registrations [200 OK, 229B, 3ms]
+  √  T01: GET /registrations-д шинэ бүртгэл (B231234567, CS313) байна
+
+□ T02. Байхгүй оюутан бүртгүүлэхэд ERROR_NO_STUDENT
+└ Setup: хичээл CS313T02
+  PUT http://localhost:3000/courses/CS313T02 [200 OK, 178B, 2ms]
+  √  Setup: хичээл CS313T02 -> 200 OK
+
+└ POST /registrations — Байхгүй оюутан бүртгүүлэхэд ERROR_NO_STUDENT
+  POST http://localhost:3000/registrations [200 OK, 192B, 2ms]
+  √  Байхгүй оюутан бүртгүүлэхэд ERROR_NO_STUDENT: статус 200
+  √  Байхгүй оюутан бүртгүүлэхэд ERROR_NO_STUDENT: result = ERROR_NO_STUDENT
+
+□ T03. Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT
+└ Setup: оюутан B23T03
+  PUT http://localhost:3000/students/B23T03 [200 OK, 178B, 2ms]
+  √  Setup: оюутан B23T03 -> 200 OK
+
+└ Setup: хичээл CS313T03
+  PUT http://localhost:3000/courses/CS313T03 [200 OK, 178B, 1ms]
+  √  Setup: хичээл CS313T03 -> 200 OK
+
+└ POST /registrations — Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT
+  POST http://localhost:3000/registrations [200 OK, 198B, 2ms]
+  √  Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT: статус 200
+  √  Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT: result = ERROR_INACTIVE_STUDENT
+
+□ T04. Байхгүй хичээлд бүртгүүлэхэд ERROR_NO_COURSE
+└ Setup: оюутан B23T04
+  PUT http://localhost:3000/students/B23T04 [200 OK, 178B, 2ms]
+  √  Setup: оюутан B23T04 -> 200 OK
+
+└ POST /registrations — Байхгүй хичээлд бүртгүүлэхэд ERROR_NO_COURSE
+  POST http://localhost:3000/registrations [200 OK, 191B, 3ms]
+  √  Байхгүй хичээлд бүртгүүлэхэд ERROR_NO_COURSE: статус 200
+  √  Байхгүй хичээлд бүртгүүлэхэд ERROR_NO_COURSE: result = ERROR_NO_COURSE
+
+□ T05. Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201)
+└ Setup: оюутан B23T05
+  PUT http://localhost:3000/students/B23T05 [200 OK, 178B, 2ms]
+  √  Setup: оюутан B23T05 -> 200 OK
+
+└ Setup: хичээл CS313T05
+  PUT http://localhost:3000/courses/CS313T05 [200 OK, 178B, 1ms]
+  √  Setup: хичээл CS313T05 -> 200 OK
+
+└ POST /registrations — Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201)
+  POST http://localhost:3000/registrations [200 OK, 215B, 2ms]
+  √  Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201): статус 200
+  √  Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201): result = ERROR_PREREQUISITES
+  √  Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201): missing = ["CS201"]
+
+□ T06. Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202)
+└ Setup: оюутан B23T06
+  PUT http://localhost:3000/students/B23T06 [200 OK, 178B, 1ms]
+  √  Setup: оюутан B23T06 -> 200 OK
+
+└ Setup: хичээл CS313T06
+  PUT http://localhost:3000/courses/CS313T06 [200 OK, 178B, 3ms]
+  √  Setup: хичээл CS313T06 -> 200 OK
+
+└ POST /registrations — Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202)
+  POST http://localhost:3000/registrations [200 OK, 215B, 2ms]
+  √  Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202): статус 200
+  √  Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202): result = ERROR_PREREQUISITES
+  √  Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202): missing = ["CS202"]
+
+□ T07. Оюутан ба хичээл хоёулаа байхгүй бол ERROR_NO_STUDENT (оюутан түрүүлж шалгагдана)
+└ POST /registrations — Оюутан ба хичээл хоёулаа байхгүй бол ERROR_NO_STUDENT (оюутан түрүүлж шалгагдана)
+  POST http://localhost:3000/registrations [200 OK, 192B, 2ms]
+  √  Оюутан ба хичээл хоёулаа байхгүй бол ERROR_NO_STUDENT (оюутан түрүүлж шалгагдана): статус 200
+  √  Оюутан ба хичээл хоёулаа байхгүй бол ERROR_NO_STUDENT (оюутан түрүүлж шалгагдана): result = ERROR_NO_STUDENT
+
+□ T08. Идэвхгүй ба урьдач дутуу оюутанд ERROR_INACTIVE_STUDENT
+└ Setup: оюутан B23T08
+  PUT http://localhost:3000/students/B23T08 [200 OK, 178B, 2ms]
+  √  Setup: оюутан B23T08 -> 200 OK
+
+└ Setup: хичээл CS313T08
+  PUT http://localhost:3000/courses/CS313T08 [200 OK, 178B, 2ms]
+  √  Setup: хичээл CS313T08 -> 200 OK
+
+└ POST /registrations — Идэвхгүй ба урьдач дутуу оюутанд ERROR_INACTIVE_STUDENT
+  POST http://localhost:3000/registrations [200 OK, 198B, 2ms]
+  √  Идэвхгүй ба урьдач дутуу оюутанд ERROR_INACTIVE_STUDENT: статус 200
+  √  Идэвхгүй ба урьдач дутуу оюутанд ERROR_INACTIVE_STUDENT: result = ERROR_INACTIVE_STUDENT
+
+□ T09. Идэвхгүй оюутан байхгүй хичээлд бүртгүүлэхэд ERROR_INACTIVE_STUDENT
+└ Setup: оюутан B23T09
+  PUT http://localhost:3000/students/B23T09 [200 OK, 178B, 2ms]
+  √  Setup: оюутан B23T09 -> 200 OK
+
+└ POST /registrations — Идэвхгүй оюутан байхгүй хичээлд бүртгүүлэхэд ERROR_INACTIVE_STUDENT
+  POST http://localhost:3000/registrations [200 OK, 198B, 1ms]
+  √  Идэвхгүй оюутан байхгүй хичээлд бүртгүүлэхэд ERROR_INACTIVE_STUDENT: статус 200
+  √  Идэвхгүй оюутан байхгүй хичээлд бүртгүүлэхэд ERROR_INACTIVE_STUDENT: result = ERROR_INACTIVE_STUDENT
+
+□ T10. Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK
+└ Setup: оюутан B23T10
+  PUT http://localhost:3000/students/B23T10 [200 OK, 178B, 2ms]
+  √  Setup: оюутан B23T10 -> 200 OK
+
+└ Setup: хичээл CS101T10
+  PUT http://localhost:3000/courses/CS101T10 [200 OK, 178B, 1ms]
+  √  Setup: хичээл CS101T10 -> 200 OK
+
+└ POST /registrations — Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK
+  POST http://localhost:3000/registrations [201 Created, 202B, 3ms]
+  √  Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK: статус 201
+  √  Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK: result = OK
+  √  Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK: registrationID нь эерэг бүхэл тоо
+
+□ T11. courseID талбар дутуу бол 400 ERROR_BAD_REQUEST
+└ Setup: оюутан B23T11
+  PUT http://localhost:3000/students/B23T11 [200 OK, 178B, 2ms]
+  √  Setup: оюутан B23T11 -> 200 OK
+
+└ Setup: хичээл CS313T11
+  PUT http://localhost:3000/courses/CS313T11 [200 OK, 178B, 4ms]
+  √  Setup: хичээл CS313T11 -> 200 OK
+
+└ POST /registrations — courseID талбар дутуу бол 400 ERROR_BAD_REQUEST
+  POST http://localhost:3000/registrations [400 Bad Request, 202B, 2ms]
+  √  courseID талбар дутуу бол 400 ERROR_BAD_REQUEST: статус 400
+  √  courseID талбар дутуу бол 400 ERROR_BAD_REQUEST: result = ERROR_BAD_REQUEST
+
+□ T12. studentID талбар дутуу бол 400 ERROR_BAD_REQUEST
+└ POST /registrations — studentID талбар дутуу бол 400 ERROR_BAD_REQUEST
+  POST http://localhost:3000/registrations [400 Bad Request, 202B, 2ms]
+  √  studentID талбар дутуу бол 400 ERROR_BAD_REQUEST: статус 400
+  √  studentID талбар дутуу бол 400 ERROR_BAD_REQUEST: result = ERROR_BAD_REQUEST
+
+□ T13. Буруу JSON илгээхэд 400 ERROR_BAD_JSON
+└ POST /registrations — Буруу JSON илгээхэд 400 ERROR_BAD_JSON
+  POST http://localhost:3000/registrations [400 Bad Request, 199B, 2ms]
+  √  Буруу JSON илгээхэд 400 ERROR_BAD_JSON: статус 400
+  √  Буруу JSON илгээхэд 400 ERROR_BAD_JSON: result = ERROR_BAD_JSON
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              31 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              31 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              48 │               0 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 2.7s                                    │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 771B (approx)                          │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 2ms [min: 1ms, max: 25ms, s.d.: 4ms] │
+└─────────────────────────────────────────────────────────────┘

@@ -45,7 +45,7 @@ function setupTest(label) {
 }
 
 function oracle(spec) {
-  const lines = ['const body = pm.response.json();'];
+  const lines = ['const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ'];
   let status = spec.expect.status;
   if (FAIL && spec.failHere) status = spec.failHere; // зориуд буруу oracle
   lines.push(
@@ -53,13 +53,13 @@ function oracle(spec) {
     `    pm.response.to.have.status(${status});`,
     '});',
     `pm.test("${spec.title}: result = ${spec.expect.result}", function () {`,
-    `    pm.expect(body.result).to.eql("${spec.expect.result}");`,
+    `    pm.expect(body().result).to.eql("${spec.expect.result}");`,
     '});'
   );
   if (spec.expect.missing) {
     lines.push(
       `pm.test("${spec.title}: missing = ${JSON.stringify(spec.expect.missing).replace(/"/g, '\\"')}", function () {`,
-      `    pm.expect(body.missing).to.eql(${JSON.stringify(spec.expect.missing)});`,
+      `    pm.expect(body().missing).to.eql(${JSON.stringify(spec.expect.missing)});`,
       '});'
     );
   }
@@ -67,9 +67,9 @@ function oracle(spec) {
     // registrationID-ийн яг утгыг шалгахгүй — сервер in-memory тул хуримтлагдана
     lines.push(
       `pm.test("${spec.title}: registrationID нь эерэг бүхэл тоо", function () {`,
-      '    pm.expect(body.registrationID).to.be.a("number");',
-      '    pm.expect(Number.isInteger(body.registrationID) && body.registrationID > 0).to.be.true;',
-      '    pm.collectionVariables.set("lastRegistrationID", body.registrationID);',
+      '    pm.expect(body().registrationID).to.be.a("number");',
+      '    pm.expect(Number.isInteger(body().registrationID) && body().registrationID > 0).to.be.true;',
+      '    pm.collectionVariables.set("lastRegistrationID", body().registrationID);',
       '});'
     );
   }

@@ -133,17 +133,17 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: result = OK\", function () {",
-                  "    pm.expect(body.result).to.eql(\"OK\");",
+                  "    pm.expect(body().result).to.eql(\"OK\");",
                   "});",
                   "pm.test(\"Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: registrationID нь эерэг бүхэл тоо\", function () {",
-                  "    pm.expect(body.registrationID).to.be.a(\"number\");",
-                  "    pm.expect(Number.isInteger(body.registrationID) && body.registrationID > 0).to.be.true;",
-                  "    pm.collectionVariables.set(\"lastRegistrationID\", body.registrationID);",
+                  "    pm.expect(body().registrationID).to.be.a(\"number\");",
+                  "    pm.expect(Number.isInteger(body().registrationID) && body().registrationID > 0).to.be.true;",
+                  "    pm.collectionVariables.set(\"lastRegistrationID\", body().registrationID);",
                   "});"
                 ]
               }
@@ -267,12 +267,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Байхгүй оюутан бүртгүүлэхэд ERROR_NO_STUDENT: статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Байхгүй оюутан бүртгүүлэхэд ERROR_NO_STUDENT: result = ERROR_NO_STUDENT\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_NO_STUDENT\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_NO_STUDENT\");",
                   "});"
                 ]
               }
@@ -409,12 +409,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT: статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Идэвхгүй оюутан бүртгүүлэхэд ERROR_INACTIVE_STUDENT: result = ERROR_INACTIVE_STUDENT\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_INACTIVE_STUDENT\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_INACTIVE_STUDENT\");",
                   "});"
                 ]
               }
@@ -506,12 +506,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Байхгүй хичээлд бүртгүүлэхэд ERROR_NO_COURSE: статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Байхгүй хичээлд бүртгүүлэхэд ERROR_NO_COURSE: result = ERROR_NO_COURSE\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_NO_COURSE\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_NO_COURSE\");",
                   "});"
                 ]
               }
@@ -648,15 +648,15 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201): статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201): result = ERROR_PREREQUISITES\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_PREREQUISITES\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_PREREQUISITES\");",
                   "});",
                   "pm.test(\"Урьдач хичээлийг огт үзээгүй бол ERROR_PREREQUISITES (missing CS201): missing = [\\\"CS201\\\"]\", function () {",
-                  "    pm.expect(body.missing).to.eql([\"CS201\"]);",
+                  "    pm.expect(body().missing).to.eql([\"CS201\"]);",
                   "});"
                 ]
               }
@@ -793,15 +793,15 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202): статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202): result = ERROR_PREREQUISITES\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_PREREQUISITES\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_PREREQUISITES\");",
                   "});",
                   "pm.test(\"Урьдач хичээлийн зарим нь дутуу бол ERROR_PREREQUISITES (missing CS202): missing = [\\\"CS202\\\"]\", function () {",
-                  "    pm.expect(body.missing).to.eql([\"CS202\"]);",
+                  "    pm.expect(body().missing).to.eql([\"CS202\"]);",
                   "});"
                 ]
               }
@@ -848,12 +848,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Оюутан ба хичээл хоёулаа байхгүй бол ERROR_NO_STUDENT (оюутан түрүүлж шалгагдана): статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Оюутан ба хичээл хоёулаа байхгүй бол ERROR_NO_STUDENT (оюутан түрүүлж шалгагдана): result = ERROR_NO_STUDENT\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_NO_STUDENT\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_NO_STUDENT\");",
                   "});"
                 ]
               }
@@ -990,12 +990,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Идэвхгүй ба урьдач дутуу оюутанд ERROR_INACTIVE_STUDENT: статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Идэвхгүй ба урьдач дутуу оюутанд ERROR_INACTIVE_STUDENT: result = ERROR_INACTIVE_STUDENT\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_INACTIVE_STUDENT\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_INACTIVE_STUDENT\");",
                   "});"
                 ]
               }
@@ -1087,12 +1087,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Идэвхгүй оюутан байхгүй хичээлд бүртгүүлэхэд ERROR_INACTIVE_STUDENT: статус 200\", function () {",
                   "    pm.response.to.have.status(200);",
                   "});",
                   "pm.test(\"Идэвхгүй оюутан байхгүй хичээлд бүртгүүлэхэд ERROR_INACTIVE_STUDENT: result = ERROR_INACTIVE_STUDENT\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_INACTIVE_STUDENT\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_INACTIVE_STUDENT\");",
                   "});"
                 ]
               }
@@ -1229,17 +1229,17 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK: статус 201\", function () {",
                   "    pm.response.to.have.status(201);",
                   "});",
                   "pm.test(\"Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK: result = OK\", function () {",
-                  "    pm.expect(body.result).to.eql(\"OK\");",
+                  "    pm.expect(body().result).to.eql(\"OK\");",
                   "});",
                   "pm.test(\"Урьдачгүй хичээлд хоосон coursesTaken-тай оюутан бүртгүүлэхэд 201 OK: registrationID нь эерэг бүхэл тоо\", function () {",
-                  "    pm.expect(body.registrationID).to.be.a(\"number\");",
-                  "    pm.expect(Number.isInteger(body.registrationID) && body.registrationID > 0).to.be.true;",
-                  "    pm.collectionVariables.set(\"lastRegistrationID\", body.registrationID);",
+                  "    pm.expect(body().registrationID).to.be.a(\"number\");",
+                  "    pm.expect(Number.isInteger(body().registrationID) && body().registrationID > 0).to.be.true;",
+                  "    pm.collectionVariables.set(\"lastRegistrationID\", body().registrationID);",
                   "});"
                 ]
               }
@@ -1376,12 +1376,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"courseID талбар дутуу бол 400 ERROR_BAD_REQUEST: статус 400\", function () {",
                   "    pm.response.to.have.status(400);",
                   "});",
                   "pm.test(\"courseID талбар дутуу бол 400 ERROR_BAD_REQUEST: result = ERROR_BAD_REQUEST\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_BAD_REQUEST\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_BAD_REQUEST\");",
                   "});"
                 ]
               }
@@ -1428,12 +1428,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"studentID талбар дутуу бол 400 ERROR_BAD_REQUEST: статус 400\", function () {",
                   "    pm.response.to.have.status(400);",
                   "});",
                   "pm.test(\"studentID талбар дутуу бол 400 ERROR_BAD_REQUEST: result = ERROR_BAD_REQUEST\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_BAD_REQUEST\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_BAD_REQUEST\");",
                   "});"
                 ]
               }
@@ -1480,12 +1480,12 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const body = pm.response.json();",
+                  "const body = () => pm.response.json(); // хариу ирээгүй (ECONNREFUSED) үед script эвдрэхгүйн тулд pm.test дотор parse хийнэ",
                   "pm.test(\"Буруу JSON илгээхэд 400 ERROR_BAD_JSON: статус 400\", function () {",
                   "    pm.response.to.have.status(400);",
                   "});",
                   "pm.test(\"Буруу JSON илгээхэд 400 ERROR_BAD_JSON: result = ERROR_BAD_JSON\", function () {",
-                  "    pm.expect(body.result).to.eql(\"ERROR_BAD_JSON\");",
+                  "    pm.expect(body().result).to.eql(\"ERROR_BAD_JSON\");",
                   "});"
                 ]
               }
