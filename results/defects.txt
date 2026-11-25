@@ -1,0 +1,34 @@
+### D1: Нэг оюутан нэг хичээлд давхар бүртгүүлэх
+$ curl -X PUT /students/D1S -d '{"status":"active","coursesTaken":["CS201"]}'
+{"result":"OK"}  [HTTP 200]
+$ curl -X PUT /courses/D1C -d '{"prerequisites":["CS201"]}'
+{"result":"OK"}  [HTTP 200]
+$ curl -X POST /registrations -d '{"studentID":"D1S","courseID":"D1C"}'
+{"result":"OK","registrationID":1}  [HTTP 201]
+$ curl -X POST /registrations -d '{"studentID":"D1S","courseID":"D1C"}'
+{"result":"OK","registrationID":2}  [HTTP 201]
+
+### D2: coursesTaken массив биш, мөр (string) байх — includes() дэд мөрөөр таарна
+$ curl -X PUT /students/D2S -d '{"status":"active","coursesTaken":"CS2019"}'
+{"result":"OK"}  [HTTP 200]
+$ curl -X PUT /courses/D2C -d '{"prerequisites":["CS201"]}'
+{"result":"OK"}  [HTTP 200]
+$ curl -X POST /registrations -d '{"studentID":"D2S","courseID":"D2C"}'
+{"result":"OK","registrationID":3}  [HTTP 201]
+
+### D3: status хоосон мөр "" -> анхдагч "active" болж хувирна
+$ curl -X PUT /students/D3S -d '{"status":"","coursesTaken":[]}'
+{"result":"OK"}  [HTTP 200]
+$ curl -X PUT /courses/D3C -d '{"prerequisites":[]}'
+{"result":"OK"}  [HTTP 200]
+$ curl -X POST /registrations -d '{"studentID":"D3S","courseID":"D3C"}'
+{"result":"OK","registrationID":4}  [HTTP 201]
+
+### D4: Бие нь JSON null — сервер унах эсэх
+$ curl -X POST /registrations -d 'null'
+  [HTTP 000]  [холболт тасарсан / хариугүй: curl exit 56]
+
+--- дараагийн хүсэлт (сервер амьд эсэх):
+$ curl -X GET /registrations -d ''
+  [HTTP 000]  [холболт тасарсан / хариугүй: curl exit 7]
+
