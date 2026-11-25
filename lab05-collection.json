@@ -1,0 +1,166 @@
+{
+  "info": {
+    "name": "Lab05 — Бүртгэлийн API",
+    "description": "F.CSA313 Лаб 5. POST /registrations-ийн спецификаци бүр бие даасан folder: setup PUT + POST + oracle.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "T01. Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK",
+      "item": [
+        {
+          "name": "Setup: оюутан B231234567",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/students/B231234567",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "students",
+                "B231234567"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"active\",\n  \"coursesTaken\": [\n    \"CS201\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Setup: оюутан B231234567 -> 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().result).to.eql(\"OK\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup: хичээл CS313",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses/CS313",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "CS313"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"prerequisites\": [\n    \"CS201\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Setup: хичээл CS313 -> 200 OK\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "    pm.expect(pm.response.json().result).to.eql(\"OK\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "POST /registrations — Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/registrations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "registrations"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"studentID\": \"B231234567\",\n  \"courseID\": \"CS313\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.test(\"Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: статус 201\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "pm.test(\"Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: result = OK\", function () {",
+                  "    pm.expect(body.result).to.eql(\"OK\");",
+                  "});",
+                  "pm.test(\"Идэвхтэй, урьдач нөхцөл хангасан оюутан бүртгүүлэхэд 201 OK: registrationID нь эерэг бүхэл тоо\", function () {",
+                  "    pm.expect(body.registrationID).to.be.a(\"number\");",
+                  "    pm.expect(Number.isInteger(body.registrationID) && body.registrationID > 0).to.be.true;",
+                  "    pm.collectionVariables.set(\"lastRegistrationID\", body.registrationID);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "lastRegistrationID",
+      "value": ""
+    }
+  ]
+}
